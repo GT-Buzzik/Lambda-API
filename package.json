@@ -1,0 +1,18 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lambda.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.308.0",
+    "node-fetch": "^2.1.2",
+    "spotify-web-api-node": "^3.0.0",
+    "util": "^0.10.3",
+    "uuid": "^3.3.2"
+  }
+}
