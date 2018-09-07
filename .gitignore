@@ -59,3 +59,7 @@ typings/
 
 # next.js build output
 .next
+
+# Ignore the packaged copy of the repo.
+index.zip
+package-lock.json
