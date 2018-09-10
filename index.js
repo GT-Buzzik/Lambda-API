@@ -3,8 +3,9 @@ const util = require("util");
 const fetch = require("node-fetch");
 var SpotifyWebApi = require('spotify-web-api-node');
 const AWS = require("aws-sdk"),
-  uuid = require('uuid'),
-  documentClient = new AWS.DynamoDB.DocumentClient();
+    uuid = require('uuid'),
+    documentClient = new AWS.DynamoDB.DocumentClient();
+require('env2')('env.json');
 const client_id = process.env.client_id;
 const client_secret = process.env.client_secret;
 const redirectUri = "https://40swmg6fu2.execute-api.us-east-1.amazonaws.com/default/process-token";
@@ -28,20 +29,36 @@ let getAccessToken = callback => {
 };
 
 let doSomethingWithSpotify = (code, state, callback) => {
-  spotifyApi.setAccessToken(code);
-  spotifyApi.getMyRecentlyPlayedTracks().then(function(data) {
-    const dbData = {
-      user_id: client_id,
-      listening_date: new Date().getTime(),
-      data: JSON.stringify(data.body)
-    };
-    documentClient.put(dbData, (err, data) => {
-      (err) ? console.error("Error: ", err) : console.log("Success! Added: ", JSON.stringify(data));
-    });
-    return callback(null, { statusCode: 200, body: data.body });
-  }, function(err) {
-    console.error(err);
-  });
+  // spotifyApi.authorizationCodeGrant(code).then((data) => {
+  //     spotifyApi.setAccessToken(data.body['access_token']);
+  //     spotifyApi.setRefreshToken(data.body['refresh_token']);
+  // }, console.log).then(() => {
+  //   spotifyApi.getMyRecentlyPlayedTracks().then(console.log);
+  // });
+  // }, function(err) {
+  //   console.error(err);
+  // });
+  
+  // function(data) {
+  //     console.log(data);
+  //   // Set the access token and refresh token
+
+    
+  //     spotifyApi.getMyRecentlyPlayedTracks().then(console.log);
+  // });
+
+
+    // const dbData = {
+      // user_id: client_id,
+      // listening_date: new Date().getTime(),
+      // data: JSON.stringify(data.body)
+    // };
+    // documentClient.put(dbData, (err, data) => {
+    //   (err) ? console.error("Error: ", err) : console.log("Success! Added: ", JSON.stringify(data));
+    // return callback(null, { statusCode: 200, body: data.body });
+  // }, function(err) {
+    // console.error(err);
+  // });
 };
 
 exports.handler = (event, context, callback) => {
@@ -60,3 +77,5 @@ exports.handler = (event, context, callback) => {
     callback(error);
   }
 };
+
+
