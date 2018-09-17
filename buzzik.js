@@ -2,20 +2,19 @@ const SpotifyWebApi = require('spotify-web-api-node');
 const scopes = ["user-read-private", "user-read-email", "user-read-recently-played"];
 
 let redirect = (location, cookie) => ({
-  statusCode: 301,
-  headers: { "Location": location },
-  cookie: cookie,
-  body: null
+    statusCode: 301,
+    headers: { "Location": location },
+    cookie: cookie,
+    body: null
 });
 
 exports.buzzik = function(clientId, clientSecret, redirectUri) {
     const spotifyApi = new SpotifyWebApi({
-      clientId: clientId,
-      clientSecret: clientSecret,
-      redirectUri: redirectUri
+        clientId: clientId,
+        clientSecret: clientSecret,
+        redirectUri: redirectUri
     });
-    
-    
+
     return {
         doStuff: cookie => {
             if (!cookie) {
@@ -24,22 +23,21 @@ exports.buzzik = function(clientId, clientSecret, redirectUri) {
             var token = JSON.parse(cookie);
             spotifyApi.setAccessToken(token.access_token);
             spotifyApi.setRefreshToken(token.refresh_token);
-            
-            
+
+
             // do something interesting here
-            
-            
-            return spotifyApi.getMyRecentlyPlayedTracks();
-            // return spotifyApi.getMe();
+
+
+            // return spotifyApi.getMyRecentlyPlayedTracks();
+            return spotifyApi.getMe();
         },
-        
-        
+
         makeCookie: (state, code) => {
             return spotifyApi.authorizationCodeGrant(code).then(data => {
                 return Promise.reject(redirect("/", JSON.stringify({
-                        expires_at: new Date() / 1000 + data.body['expires_in'],
-                        access_token: data.body['access_token'],
-                        refresh_token: data.body['refresh_token']
+                    expires_at: new Date() / 1000 + data.body['expires_in'],
+                    access_token: data.body['access_token'],
+                    refresh_token: data.body['refresh_token']
                 })));
             });
         }
