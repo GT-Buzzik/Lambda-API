@@ -1,4 +1,5 @@
 const SpotifyWebApi = require('spotify-web-api-node');
+const db_funcs = require("./db_funcs");
 const scopes = ["user-read-private", "user-read-email", "user-read-recently-played"];
 
 let redirect = (location, cookie) => ({
@@ -24,12 +25,13 @@ exports.buzzik = function(clientId, clientSecret, redirectUri) {
             spotifyApi.setAccessToken(token.access_token);
             spotifyApi.setRefreshToken(token.refresh_token);
 
+            var user_id = JSON.parse(spotifyApi.getMe()).uri;
 
             // do something interesting here
+            db_funcs.storeListeningHistory(user_id, spotifyApi.getMyRecentlyPlayedTracks(), console.log());
 
-
-            // return spotifyApi.getMyRecentlyPlayedTracks();
-            return spotifyApi.getMe();
+            return spotifyApi.getMyRecentlyPlayedTracks();
+            // return spotifyApi.getMe();
         },
 
         makeCookie: (state, code) => {
