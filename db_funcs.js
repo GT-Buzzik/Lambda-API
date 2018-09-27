@@ -2,10 +2,18 @@
 const util = require("util");
 const fetch = require("node-fetch");
 var SpotifyWebApi = require('spotify-web-api-node');
-const AWS = require("aws-sdk"),
-    uuid = require('uuid'),
-    documentClient = new AWS.DynamoDB.DocumentClient();
 require('env2')('env.json');
+const AWS = require("aws-sdk"),
+    uuid = require('uuid');
+
+AWS.config.update({
+    region: process.env.DynamoDBRegion,
+    endpoint: process.env.DynamoDBEndpoint,
+    accessKeyId: process.env.DynamoDBAccessKeyId,
+    secretAccessKey: process.env.DynamoDBSecretAccessKey,
+});
+const documentClient = new AWS.DynamoDB.DocumentClient();
+
 // const client_id = process.env.client_id;
 // const client_secret = process.env.client_secret;
 // const redirectUri = "https://40swmg6fu2.execute-api.us-east-1.amazonaws.com/default/process-token";
