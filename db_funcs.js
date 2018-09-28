@@ -24,21 +24,25 @@ const state = "NA";
 module.exports.getListeningHistory = (user_id, callback) => {
     var params = {
         ExpressionAttributeValues: {
-            ":UID": {"S": user_id}
+            ":UID": user_id
         },
         KeyConditionExpression: "user_id = :UID",
         ProjectionExpression: "listening_date, track",
         // TableName : process.env.LISTENING_HISTORY_TABLE_NAME
         TableName: "listening_history"
     };
-    documentClient.query(params, (err, data) => {
+    console.log("getListeningHistory params: ", params);
+    console.log("getLIsteningHistory user-id: ", user_id);
+    return Promise.resolve(documentClient.query(params, (err, data) => {
         if (err) {
-            callback(err, null);
+            // console.log("Error: ", err);
+            return callback(err, null);
         }
         else {
-            callback(null, data.items);
+            // console.log("DB Returned Items: ", data);
+            return callback(null, data.Items);
         }
-    });
+    }));
 };
 
 /**

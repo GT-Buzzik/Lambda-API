@@ -42,6 +42,33 @@ exports.buzzik = function(clientId, clientSecret, redirectUri) {
             return spotifyApi.getMyRecentlyPlayedTracks();
         },
 
+        fetchListeningHistory: (user_id) => {
+
+            // function getStuffAsync(param) {
+            //     return new Promise(function(resolve, reject) {
+            //         getStuff(param, function(err, data) {
+            //             if (err !== null) reject(err);
+            //             else resolve(data);
+            //         });
+            //     });
+            // }
+            var user_id = 'spotify:user:cooperpellaton';
+            return Promise.resolve(db_funcs.getListeningHistory(user_id, listening_history_callback));
+
+            function listening_history_callback(err, data) {
+                if (err) {
+                    console.error(err);
+                }
+
+                if (data) {
+                    console.log("about to return");
+                    // console.log("data: ", data);
+                    console.log(data);
+                    return JSON.stringify(data);
+                }
+            }
+        },
+
         makeCookie: (state, code) => {
             return spotifyApi.authorizationCodeGrant(code).then(data => {
                 return Promise.reject(redirect("/", JSON.stringify({
