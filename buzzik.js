@@ -25,13 +25,21 @@ exports.buzzik = function(clientId, clientSecret, redirectUri) {
             spotifyApi.setAccessToken(token.access_token);
             spotifyApi.setRefreshToken(token.refresh_token);
 
-            var user_id = JSON.parse(spotifyApi.getMe()).uri;
+            spotifyApi.getMe().then(
+                function(data) {
+                    var user_id = data.body.uri;
+                    console.log("USER ID: " + user_id);
+                    spotifyApi.getMyRecentlyPlayedTracks().then(
+                        function(data) {
+                            db_funcs.storeListeningHistory(user_id, data.body);
+                        });
+                },
+                function(err) {
+                    console.error(err);
 
-            // do something interesting here
-            db_funcs.storeListeningHistory(user_id, spotifyApi.getMyRecentlyPlayedTracks(), console.log());
+                });
 
             return spotifyApi.getMyRecentlyPlayedTracks();
-            // return spotifyApi.getMe();
         },
 
         makeCookie: (state, code) => {

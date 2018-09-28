@@ -9,68 +9,64 @@ const AWS = require("aws-sdk"),
 AWS.config.update({
     region: process.env['dynamo_db_region'],
     endpoint: process.env['dynamo_db_endpoint'],
-    accessKeyId: process.env['dynamo_db_access_id'], 
+    accessKeyId: process.env['dynamo_db_access_id'],
     secretAccessKey: process.env['dynamo_db_secret_key'],
 });
 const documentClient = new AWS.DynamoDB.DocumentClient();
 
-// const client_id = process.env.client_id;
-// const client_secret = process.env.client_secret;
-// const redirectUri = "https://40swmg6fu2.execute-api.us-east-1.amazonaws.com/default/process-token";
-// // const redirectUri = "http://localhost:8080";
-// const spotifyApi = new SpotifyWebApi({
-//   clientId: client_id,
-//   clientSecret: client_secret,
-//   redirectUri: redirectUri
-// });
-
 const scopes = ["user-read-private", "user-read-email"];
 const state = "NA";
 
-exports.db_funcs = () => {
-    return {
-        /**
-         * Takes user_id, calls callback(err, data) where the data is a list
-         * of tracks the user has listened to and their dates.
-         */
-        getListeningHistory : (user_id, callback) => {
-            var params = {
-                ExpressionAttributeNames: {
-                    "#UID" : user_id
-                },
-                FilterExpression: "user_id = #UID",
-                ProjectionExpression: "listening_date, track",
-                // TableName : process.env.LISTENING_HISTORY_TABLE_NAME
-                TableName : "listening_history"
-            };
-            documentClient.scan(params, (err, data) => {
-                if (err) {
-                    callback(err, null);
-                } else {
-                    callback(null, data.items);
-                }
-            });
+/**
+ * Takes user_id, calls callback(err, data) where the data is a list
+ * of tracks the user has listened to and their dates.
+ */
+module.exports.getListeningHistory = (user_id, callback) => {
+    var params = {
+        ExpressionAttributeNames: {
+            "#UID": user_id
         },
-
-        /**
-         * Takes user_id, full listening history json (as string) from Spotify
-         */
-        storeListeningHistory : (user_id, spotifyHistory, callback) => {
-            const hist = JSON.parse(spotifyHistory);
-            for (let t in hist.items) {
-                let params = {
-                    Item : {
-                        "user_id": user_id,
-                        "listening_date" : new Date(t.played_at).getTime(),
-                        "track": JSON.stringify(t.track)
-                    },
-                    // TableName : process.env.LISTENING_HISTORY_TABLE_NAME
-                    TableName : "listening_history"
-                }
-                documentClient.put(params, function(err, data){
-                    callback(err, data);
-                });
-            }
+        FilterExpression: "user_id = #UID",
+        ProjectionExpression: "listening_date, track",
+        // TableName : process.env.LISTENING_HISTORY_TABLE_NAME
+        TableName: "listening_history"
+    };
+    documentClient.scan(params, (err, data) => {
+        if (err) {
+            callback(err, null);
         }
+        else {
+            callback(null, data.items);
+        }
+    });
+};
+
+/**
+ * Takes user_id, full listening history json (as string) from Spotify
+ */
+module.exports.storeListeningHistory = (user_id, spotifyHistory, callback) => {
+    const hist = spotifyHistory;
+    let i;
+    for (i in hist.items) {
+        let t = hist.items[i];
+        let params = {
+            Item: {
+                "user_id": user_id,
+                "listening_date": new Date(t.played_at).getTime(),
+                "track": JSON.stringify(t.track)
+            },
+            // TableName : process.env.LISTENING_HISTORY_TABLE_NAME
+            TableName: "listening_history"
+        }
+        console.log(params);
+        documentClient.put(params, function(err, data) {
+            if (err) {
+                console.log("Store listening history error: ", err);
+            }
+            if (data) {
+                console.log("Store listening history data: ", data);
+            }
+            // callback(err, data);
+        });
     }
 }
