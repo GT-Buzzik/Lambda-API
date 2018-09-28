@@ -23,15 +23,15 @@ const state = "NA";
  */
 module.exports.getListeningHistory = (user_id, callback) => {
     var params = {
-        ExpressionAttributeNames: {
-            "#UID": user_id
+        ExpressionAttributeValues: {
+            ":UID": {"S": user_id}
         },
-        FilterExpression: "user_id = #UID",
+        KeyConditionExpression: "user_id = :UID",
         ProjectionExpression: "listening_date, track",
         // TableName : process.env.LISTENING_HISTORY_TABLE_NAME
         TableName: "listening_history"
     };
-    documentClient.scan(params, (err, data) => {
+    documentClient.query(params, (err, data) => {
         if (err) {
             callback(err, null);
         }
