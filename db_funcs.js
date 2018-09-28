@@ -7,10 +7,10 @@ const AWS = require("aws-sdk"),
     uuid = require('uuid');
 
 AWS.config.update({
-    region: process.env.DynamoDBRegion,
-    endpoint: process.env.DynamoDBEndpoint,
-    accessKeyId: process.env.DynamoDBAccessKeyId,
-    secretAccessKey: process.env.DynamoDBSecretAccessKey,
+    region: process.env['dynamo_db_region'],
+    endpoint: process.env['dynamo_db_endpoint'],
+    accessKeyId: process.env['dynamo_db_access_id'], 
+    secretAccessKey: process.env['dynamo_db_secret_key'],
 });
 const documentClient = new AWS.DynamoDB.DocumentClient();
 
