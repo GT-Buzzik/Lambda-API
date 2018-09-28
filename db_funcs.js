@@ -40,6 +40,11 @@ module.exports.getListeningHistory = (user_id, callback) => {
         }
         else {
             // console.log("DB Returned Items: ", data);
+            // Cleanup output
+            data.Items.forEach((item) => {
+                item.track = JSON.parse(item.track);
+            });
+
             return callback(null, data.Items);
         }
     }));
@@ -51,8 +56,7 @@ module.exports.getListeningHistory = (user_id, callback) => {
 module.exports.storeListeningHistory = (user_id, spotifyHistory, callback) => {
     const hist = spotifyHistory;
     let i;
-    for (i in hist.items) {
-        let t = hist.items[i];
+    hist.items.forEach((t) => {
         let params = {
             Item: {
                 "user_id": user_id,
@@ -61,7 +65,7 @@ module.exports.storeListeningHistory = (user_id, spotifyHistory, callback) => {
             },
             // TableName : process.env.LISTENING_HISTORY_TABLE_NAME
             TableName: "listening_history"
-        }
+        };
         console.log(params);
         documentClient.put(params, function(err, data) {
             if (err) {
@@ -72,5 +76,5 @@ module.exports.storeListeningHistory = (user_id, spotifyHistory, callback) => {
             }
             // callback(err, data);
         });
-    }
+    });
 }
