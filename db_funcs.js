@@ -33,21 +33,21 @@ module.exports.getListeningHistory = (user_id, callback) => {
     };
     console.log("getListeningHistory params: ", params);
     console.log("getLIsteningHistory user-id: ", user_id);
-    return Promise.resolve(documentClient.query(params, (err, data) => {
-        if (err) {
-            // console.log("Error: ", err);
-            return callback(err, null);
-        }
-        else {
-            // console.log("DB Returned Items: ", data);
-            // Cleanup output
-            data.Items.forEach((item) => {
-                item.track = JSON.parse(item.track);
-            });
+    return new Promise((resolve, reject) => {
+        documentClient.query(params, (err, data) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(data);
+            }
+        });
+    }).then(data => {
+        data.Items.forEach(item => {
+            item.track = JSON.parse(item.track);
+        });
+        return data;
+    });
 
-            return callback(null, data.Items);
-        }
-    }));
 };
 
 /**

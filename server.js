@@ -37,7 +37,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/fetch_listening_history', (req, res) => {
-    buzzik.fetchListeningHistory(null).then(handleData(req, res), handleErr(req, res));
-})
+    buzzik.fetchListeningHistory(req.query.id).then(handleData(req, res), handleErr(req, res));
+});
 
 app.listen(process.env.PORT, () => console.log('Buzzik Spotify API handler listening on port:' + process.env.PORT))
