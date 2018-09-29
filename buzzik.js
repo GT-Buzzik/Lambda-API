@@ -4,7 +4,9 @@ const scopes = ["user-read-private", "user-read-email", "user-read-recently-play
 
 let redirect = (location, cookie) => ({
     statusCode: 301,
-    headers: { "Location": location },
+    headers: {
+        "Location": location
+    },
     cookie: cookie,
     body: null
 });
@@ -17,6 +19,11 @@ exports.buzzik = function(clientId, clientSecret, redirectUri) {
     });
 
     return {
+        /**
+         * Default function called on initial request to endpoint. Will login the user,
+         * fetch their spotify results, then call the DB library to store the result
+         * as based on their user_id from Spotify.
+         */
         doStuff: cookie => {
             if (!cookie) {
                 return Promise.reject(redirect(spotifyApi.createAuthorizeURL(scopes, "NA")));
@@ -41,16 +48,15 @@ exports.buzzik = function(clientId, clientSecret, redirectUri) {
 
             return spotifyApi.getMyRecentlyPlayedTracks();
         },
-
+        /**
+         * Takes a user ID through the endpoint and calls out to the DB library
+         * to make the request and return the result.
+         */
         fetchListeningHistory: (user_id) => {
-
             return db_funcs.getListeningHistory(user_id)
                 .then(data => {
                     return JSON.stringify(data);
                 });
-
-
-
         },
 
         makeCookie: (state, code) => {
