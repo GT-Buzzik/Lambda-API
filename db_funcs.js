@@ -51,7 +51,7 @@ module.exports.getListeningHistory = (user_id, callback) => {
 };
 
 /**
- * Takes user_id, full listening history json (as string) from Spotify
+ * Takes user_id, full listening history object from Spotify
  */
 module.exports.storeListeningHistory = (user_id, spotifyHistory, callback) => {
     const hist = spotifyHistory;
@@ -75,6 +75,58 @@ module.exports.storeListeningHistory = (user_id, spotifyHistory, callback) => {
                 console.log("Store listening history data: ", data);
             }
             // callback(err, data);
+        });
+    });
+}
+
+/**
+ * Store user info like GT info, spotify access token, spotify id
+ */
+module.exports.storeUserSpotifyDetails = (user_id, spotify_access_token, spotify_access_key, callback) => {
+    let params = {
+        ExpressionAttributeValues: {
+            ":UID": user_id,
+            ":SAT": spotify_access_token,
+            ":SAK": spotify_access_key
+        },
+        Key: {
+            "user_id": user_id
+        },
+        TableName: "user_data",
+        UpdateExpression: "SET spotify_access_token = :SAT, SET spotify_access_key = :SAK",
+    };
+    return new Promise((resolve, reject) => {
+        documentClient.updateItem(params, function(err, data) {
+            if (err) {
+                reject(err);
+            }
+            if (data) {
+                resolve(data);
+            }
+        })
+    });
+}
+
+/**
+ * Retrieve spotify access info
+ */
+module.exports.getUserSpotifyDetails = (user_id, callback) => {
+    var params = {
+        ExpressionAttributeValues: {
+            ":UID": user_id
+        },
+        KeyConditionExpression: "user_id = :UID",
+        ProjectionExpression: "spotify_access_token, spotify_access_key",
+        TableName: "user_data"
+    };
+
+    return new Promise((resolve, reject) => {
+        documentClient.query(params, (err, data) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(data);
+            }
         });
     });
 }
