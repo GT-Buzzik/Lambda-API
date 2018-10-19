@@ -64,3 +64,4 @@ env.json
 # Ignore the packaged copy of the repo.
 index.zip
 package-lock.json
+package.json
