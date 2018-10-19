@@ -68,6 +68,45 @@ exports.buzzik = function(clientId, clientSecret, redirectUri) {
             });
         },
 
+        /**
+         * Takes a user_id and then calls the DB Func to get the user's spotify
+         * details.
+         */
+        getUser: (user_id) => {
+            return db_funcs.getUserSpotifyDetails(user_id).then(data => {
+                return JSON.stringify(data);
+            });
+        },
+
+        /**
+         * Takes a user_id and returns the notification frequency associated with
+         * their ID in the database.
+         */
+        getNotificationFrequency: (user_id) => {
+            return db_funcs.getUserNotificationFrequency(user_id).then(data => {
+                return JSON.stringify(data);
+            });
+        },
+
+        /**
+         * Requires a user_id and notification_frequency. Stores this association
+         * in the database so that it can be pulled from the app.
+         */
+        storeNotificationFrequency: (user_id, notification_frequency) => {
+            return db_funcs.storeUserNotificationFrequency(user_id, notification_frequency).then(data => {
+                return JSON.stringify(data);
+            });
+        },
+
+        /**
+         * Requires a user_id. Returns whether a given user_id is a faculty.
+         */
+        getFacultyStatus: (user_id) => {
+            return db_funcs.getUserFacultyStatus(user_id).then(data => {
+                return JSON.stringify(data);
+            });
+        },
+
         makeCookie: (state, code) => {
             return spotifyApi.authorizationCodeGrant(code).then(data => {
                 return Promise.reject(redirect("/", JSON.stringify({

@@ -41,20 +41,32 @@ app.get('/', (req, res) => {
     buzzik.defaultAction((req.cookies || {})["token"]).then(handleData(req, res), handleErr(req, res));
 });
 
-app.get('/get_spotify_details', (req, res) => {
+app.get('/api/get_spotify_details', (req, res) => {
     buzzik.fetch_spotify_details(req.query.id).then(handleData(req, res), handleErr(req, res));
 });
 
-app.get('/fetch_listening_history', (req, res) => {
+app.get('/api/fetch_listening_history', (req, res) => {
     buzzik.fetchListeningHistory(req.query.id).then(handleData(req, res), handleErr(req, res));
 });
 
-app.get('/delete_user', (req, res) => {
+app.get('/api/delete_user', (req, res) => {
     buzzik.deleteUser(req.query.id).then(handleData(req, res), handleErr(req, res));
 });
 
-app.get('/get_user', (req, res) => {
-    db_funcs.getUserSpotifyDetails(req.query.id).then(handleData(req, res), handleErr(req, res));
+app.get('/api/get_user', (req, res) => {
+    buzzik.getUser(req.query.id).then(handleData(req, res), handleErr(req, res));
+});
+
+app.get('/api/get_user_notification_frequency', (req, res) => {
+    buzzik.getNotificationFrequency(req.query.id).then(handleData(req, res), handleErr(req, res));
+});
+
+app.get('/api/store_user_notification_frequency', (req, res) => {
+    buzzik.storeNotificationFrequency(req.query.id, req.query.notification_frequency).then(handleData(req, res), handleErr(req, res));
+});
+
+app.get('/api/get_faculty_status', (req, res) => {
+    buzzil.getFacultyStatus(req.query.id).then(handleData(req, res), handleErr(req, res));
 });
 
 app.listen(process.env.PORT, () => console.log('Buzzik Spotify API handler listening on port:' + process.env.PORT))
