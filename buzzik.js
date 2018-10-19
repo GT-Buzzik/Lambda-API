@@ -45,8 +45,6 @@ exports.buzzik = function(clientId, clientSecret, redirectUri) {
                     console.error(err);
 
                 });
-
-            return spotifyApi.getMyRecentlyPlayedTracks();
         },
         /**
          * Takes a user ID through the endpoint and calls out to the DB library

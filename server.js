@@ -36,6 +36,10 @@ app.get('/', (req, res) => {
     buzzik.doStuff((req.cookies || {})["token"]).then(handleData(req, res), handleErr(req, res));
 });
 
+app.get('/get_spotify_details', req, res) => {
+    buzzik.fetch_spotify_details(req.query.id).then(handleData(req, res), handleErr(req, res));
+}
+
 app.get('/fetch_listening_history', (req, res) => {
     buzzik.fetchListeningHistory(req.query.id).then(handleData(req, res), handleErr(req, res));
 });
