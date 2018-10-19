@@ -18,6 +18,65 @@ const scopes = ["user-read-private", "user-read-email"];
 const state = "NA";
 
 /**
+ * Do NOT expose attribute_name outside of this file.
+ * Stores a single attribute to be associated with a user in user_data table.
+ * @param {} user_id
+ * @param {*} attribute_name
+ * @param {*} attribute_value
+ */
+function storeUserValue(user_id, attribute_name, attribute_value) {
+    let params = {
+        ExpressionAttributeValues: {
+            ":UID": user_id,
+            ":ATTR": attribute_value
+        },
+        Key: {
+            "user_id": user_id
+        },
+        TableName: "user_data",
+        UpdateExpression: "SET " + attribute_name + " = :ATTR",
+    };
+    return new Promise((resolve, reject) => {
+        documentClient.updateItem(params, function(err, data) {
+            if (err) {
+                reject(err);
+            }
+            if (data) {
+                resolve(data);
+            }
+        });
+    });
+}
+
+/**
+ * retrieves the attributes attribute_names for the given user_id from the user_data table.
+ * @param {} user_id
+ * @param {*} attribute_names
+ */
+function getUserValues(user_id, attribute_names) {
+    var params = {
+        ExpressionAttributeValues: {
+            ":UID": user_id
+        },
+        KeyConditionExpression: "user_id = :UID",
+        ProjectionExpression: attribute_names,
+        TableName: "user_data"
+    };
+
+    return new Promise((resolve, reject) => {
+        documentClient.query(params, (err, data) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(data);
+            }
+        });
+    });
+}
+
+
+
+/**
  * Takes user_id, calls callback(err, data) where the data is a list
  * of tracks the user has listened to and their dates.
  */
@@ -84,27 +143,8 @@ module.exports.storeListeningHistory = (user_id, spotifyHistory) => {
  * Store user info like GT info, spotify access token, spotify id
  */
 module.exports.storeUserSpotifyDetails = (user_id, spotify_access_token, spotify_access_key) => {
-    let params = {
-        ExpressionAttributeValues: {
-            ":UID": user_id,
-            ":SAT": spotify_access_token,
-            ":SAK": spotify_access_key
-        },
-        Key: {
-            "user_id": user_id
-        },
-        TableName: "user_data",
-        UpdateExpression: "SET spotify_access_token = :SAT, SET spotify_access_key = :SAK",
-    };
-    return new Promise((resolve, reject) => {
-        documentClient.updateItem(params, function(err, data) {
-            if (err) {
-                reject(err);
-            }
-            if (data) {
-                resolve(data);
-            }
-        });
+    return storeUserValue(user_id, "spotify_access_token", spotify_access_token).then(() => {
+        storeUserValue(user_id, "spotify_access_key", spotify_access_key);
     });
 }
 
@@ -112,126 +152,35 @@ module.exports.storeUserSpotifyDetails = (user_id, spotify_access_token, spotify
  * Retrieve spotify access info
  */
 module.exports.getUserSpotifyDetails = (user_id) => {
-    var params = {
-        ExpressionAttributeValues: {
-            ":UID": user_id
-        },
-        KeyConditionExpression: "user_id = :UID",
-        ProjectionExpression: "spotify_access_token, spotify_access_key",
-        TableName: "user_data"
-    };
-
-    return new Promise((resolve, reject) => {
-        documentClient.query(params, (err, data) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(data);
-            }
-        });
-    });
+    return getUserValues(user_id, "spotify_access_token, spotify_access_key");
 }
 
 /**
  * Store user notification frequency, frequency is string "never", "weekly", or "monthly"
  */
 module.exports.storeUserNotificationFrequency = (user_id, notification_frequency) => {
-    let params = {
-        ExpressionAttributeValues: {
-            ":UID": user_id,
-            ":NF": notification_frequency
-        },
-        Key: {
-            "user_id": user_id
-        },
-        TableName: "user_data",
-        UpdateExpression: "SET notification_frequency = :NF",
-    };
-    return new Promise((resolve, reject) => {
-        documentClient.updateItem(params, function(err, data) {
-            if (err) {
-                reject(err);
-            }
-            if (data) {
-                resolve(data);
-            }
-        });
-    });
+    return storeUserValue(user_id, "notification_frequency", notification_frequency);
 }
 
 /**
  * Retrieve user notification frequency.
  */
 module.exports.getUserNotificationFrequency = (user_id) => {
-    var params = {
-        ExpressionAttributeValues: {
-            ":UID": user_id
-        },
-        KeyConditionExpression: "user_id = :UID",
-        ProjectionExpression: "notification_frequency",
-        TableName: "user_data"
-    };
-
-    return new Promise((resolve, reject) => {
-        documentClient.query(params, (err, data) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(data);
-            }
-        });
-    });
+    return getUserValues(user_id, "notification_frequency");
 }
 
 /**
  * Store user faculty status, boolean true or false
  */
 module.exports.storeUserFacultyStatus = (user_id, is_faculty) => {
-    let params = {
-        ExpressionAttributeValues: {
-            ":UID": user_id,
-            ":IF": is_faculty
-        },
-        Key: {
-            "user_id": user_id
-        },
-        TableName: "user_data",
-        UpdateExpression: "SET is_faculty = :IF",
-    };
-    return new Promise((resolve, reject) => {
-        documentClient.updateItem(params, function(err, data) {
-            if (err) {
-                reject(err);
-            }
-            if (data) {
-                resolve(data);
-            }
-        });
-    });
+    return storeUserValue(user_id, "is_faculty", is_faculty);
 }
 
 /**
  * Retrieve user notification frequency.
  */
 module.exports.getUserFacultyStatus = (user_id) => {
-    var params = {
-        ExpressionAttributeValues: {
-            ":UID": user_id
-        },
-        KeyConditionExpression: "user_id = :UID",
-        ProjectionExpression: "is_faculty",
-        TableName: "user_data"
-    };
-
-    return new Promise((resolve, reject) => {
-        documentClient.query(params, (err, data) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(data);
-            }
-        });
-    });
+    return getUserValues(user_id, "is_faculty");
 }
 
 
