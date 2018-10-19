@@ -142,9 +142,11 @@ module.exports.storeListeningHistory = (user_id, spotifyHistory) => {
 /**
  * Store user info like GT info, spotify access token, spotify id
  */
-module.exports.storeUserSpotifyDetails = (user_id, spotify_access_token, spotify_access_key) => {
+module.exports.storeUserSpotifyDetails = (user_id, spotify_access_token, spotify_refresh_token, expiration_date) => {
     return storeUserValue(user_id, "spotify_access_token", spotify_access_token).then(() => {
-        storeUserValue(user_id, "spotify_access_key", spotify_access_key);
+        return storeUserValue(user_id, "spotify_refresh_token", spotify_refresh_token).then(() => {
+            return storeUserValue(user_id, "spotify_token_expiration_date", expiration_date);
+        });
     });
 }
 
@@ -152,7 +154,7 @@ module.exports.storeUserSpotifyDetails = (user_id, spotify_access_token, spotify
  * Retrieve spotify access info
  */
 module.exports.getUserSpotifyDetails = (user_id) => {
-    return getUserValues(user_id, "spotify_access_token, spotify_access_key");
+    return getUserValues(user_id, "spotify_access_token, spotify_refresh_token, spotify_token_expiration_date");
 }
 
 /**
