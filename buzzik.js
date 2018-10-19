@@ -24,7 +24,7 @@ exports.buzzik = function(clientId, clientSecret, redirectUri) {
          * fetch their spotify results, then call the DB library to store the result
          * as based on their user_id from Spotify.
          */
-        doStuff: cookie => {
+        defaultAction: cookie => {
             if (!cookie) {
                 return Promise.reject(redirect(spotifyApi.createAuthorizeURL(scopes, "NA")));
             }
@@ -57,6 +57,17 @@ exports.buzzik = function(clientId, clientSecret, redirectUri) {
                 .then(data => {
                     return JSON.stringify(data);
                 });
+        },
+
+        /**
+         * Takes a user ID through the delete_user endpoint and calls the 
+         * DB library to delete said user, then return the result of that
+         * delete operation.
+         */
+        deleteUser: (user_id) => {
+            return db_funcs.deleteUserAccount(user_id).then(data => {
+                return JSON.stringify(data);
+            });
         },
 
         makeCookie: (state, code) => {

@@ -193,20 +193,16 @@ module.exports.deleteUserAccount = (user_id) => {
     // Delete account from user_data
     let params = {
         RequestItems: {
-            "user_data": [
-                {
-                    DeleteRequest: {
-                        Key: {
-                            "user_id": {
-                                S: user_id
-                            }
+            "user_data": [{
+                DeleteRequest: {
+                    Key: {
+                        "user_id": {
+                            S: user_id
                         }
                     }
                 }
-            ]
-        },
-        ReturnConsumedCapacity: NONE,
-        ReturnItemCollectionMetrics: NONE
+            }]
+        }
     }
 
     return new Promise((resolve, reject) => {
@@ -248,7 +244,7 @@ module.exports.deleteUserAccount = (user_id) => {
 
     }).then((data) => {
         for (let i = 0; i < data.Items.length; i += 25) {
-            delete_keys = data.Items.slice(i, i + 25);
+            let delete_keys = data.Items.slice(i, i + 25);
             delete_keys.forEach((k) => {
                 //Reformat each entry to be according to what we need for batchwriteitem
                 k = {
