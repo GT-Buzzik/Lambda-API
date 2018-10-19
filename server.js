@@ -41,9 +41,9 @@ app.get('/', (req, res) => {
     buzzik.defaultAction((req.cookies || {})["token"]).then(handleData(req, res), handleErr(req, res));
 });
 
-app.get('/get_spotify_details', req, res) => {
+app.get('/get_spotify_details', (req, res) => {
     buzzik.fetch_spotify_details(req.query.id).then(handleData(req, res), handleErr(req, res));
-}
+});
 
 app.get('/fetch_listening_history', (req, res) => {
     buzzik.fetchListeningHistory(req.query.id).then(handleData(req, res), handleErr(req, res));
@@ -55,6 +55,6 @@ app.get('/delete_user', (req, res) => {
 
 app.get('/get_user', (req, res) => {
     db_funcs.getUserSpotifyDetails(req.query.id).then(handleData(req, res), handleErr(req, res));
-})
+});
 
 app.listen(process.env.PORT, () => console.log('Buzzik Spotify API handler listening on port:' + process.env.PORT))
