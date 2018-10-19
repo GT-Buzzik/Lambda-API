@@ -21,7 +21,7 @@ const state = "NA";
  * Takes user_id, calls callback(err, data) where the data is a list
  * of tracks the user has listened to and their dates.
  */
-module.exports.getListeningHistory = (user_id, callback) => {
+module.exports.getListeningHistory = (user_id) => {
     var params = {
         ExpressionAttributeValues: {
             ":UID": user_id
@@ -182,6 +182,58 @@ module.exports.getUserNotificationFrequency = (user_id) => {
         });
     });
 }
+
+/**
+ * Store user faculty status, boolean true or false
+ */
+module.exports.storeUserFacultyStatus = (user_id, is_faculty) => {
+    let params = {
+        ExpressionAttributeValues: {
+            ":UID": user_id,
+            ":IF": is_faculty
+        },
+        Key: {
+            "user_id": user_id
+        },
+        TableName: "user_data",
+        UpdateExpression: "SET is_faculty = :IF",
+    };
+    return new Promise((resolve, reject) => {
+        documentClient.updateItem(params, function(err, data) {
+            if (err) {
+                reject(err);
+            }
+            if (data) {
+                resolve(data);
+            }
+        });
+    });
+}
+
+/**
+ * Retrieve user notification frequency.
+ */
+module.exports.getUserFacultyStatus = (user_id) => {
+    var params = {
+        ExpressionAttributeValues: {
+            ":UID": user_id
+        },
+        KeyConditionExpression: "user_id = :UID",
+        ProjectionExpression: "is_faculty",
+        TableName: "user_data"
+    };
+
+    return new Promise((resolve, reject) => {
+        documentClient.query(params, (err, data) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(data);
+            }
+        });
+    });
+}
+
 
 /**
  * Delete the account info and listening history of the specified user_id
