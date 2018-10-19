@@ -18,6 +18,7 @@ const scopes = ["user-read-private", "user-read-email"];
 const state = "NA";
 
 /**
+ * INTERNAL
  * Do NOT expose attribute_name outside of this file.
  * Stores a single attribute to be associated with a user in user_data table.
  * @param {} user_id
@@ -49,6 +50,7 @@ function storeUserValue(user_id, attribute_name, attribute_value) {
 }
 
 /**
+ * INTERNAL
  * retrieves the attributes attribute_names for the given user_id from the user_data table.
  * @param {} user_id
  * @param {*} attribute_names
@@ -77,6 +79,7 @@ function getUserValues(user_id, attribute_names) {
 
 
 /**
+ * EXTERNAL
  * Takes user_id, calls callback(err, data) where the data is a list
  * of tracks the user has listened to and their dates.
  */
@@ -111,6 +114,7 @@ module.exports.getListeningHistory = (user_id) => {
 };
 
 /**
+ * EXTERNAL
  * Takes user_id, full listening history object from Spotify
  */
 module.exports.storeListeningHistory = (user_id, spotifyHistory) => {
@@ -140,6 +144,7 @@ module.exports.storeListeningHistory = (user_id, spotifyHistory) => {
 }
 
 /**
+ * INTERNAL
  * Store user info like GT info, spotify access token, spotify id
  */
 module.exports.storeUserSpotifyDetails = (user_id, spotify_access_token, spotify_refresh_token, expiration_date) => {
@@ -151,6 +156,7 @@ module.exports.storeUserSpotifyDetails = (user_id, spotify_access_token, spotify
 }
 
 /**
+ * INTERNAL
  * Retrieve spotify access info
  */
 module.exports.getUserSpotifyDetails = (user_id) => {
@@ -158,6 +164,7 @@ module.exports.getUserSpotifyDetails = (user_id) => {
 }
 
 /**
+ * EXTERNAL
  * Store user notification frequency, frequency is string "never", "weekly", or "monthly"
  */
 module.exports.storeUserNotificationFrequency = (user_id, notification_frequency) => {
@@ -165,6 +172,7 @@ module.exports.storeUserNotificationFrequency = (user_id, notification_frequency
 }
 
 /**
+ * EXTERNAL
  * Retrieve user notification frequency.
  */
 module.exports.getUserNotificationFrequency = (user_id) => {
@@ -172,6 +180,7 @@ module.exports.getUserNotificationFrequency = (user_id) => {
 }
 
 /**
+ * INTERNAL
  * Store user faculty status, boolean true or false
  */
 module.exports.storeUserFacultyStatus = (user_id, is_faculty) => {
@@ -179,6 +188,7 @@ module.exports.storeUserFacultyStatus = (user_id, is_faculty) => {
 }
 
 /**
+ * EXTERNAL
  * Retrieve user notification frequency.
  */
 module.exports.getUserFacultyStatus = (user_id) => {
@@ -187,6 +197,7 @@ module.exports.getUserFacultyStatus = (user_id) => {
 
 
 /**
+ * EXTERNAL
  * Delete the account info and listening history of the specified user_id
  */
 module.exports.deleteUserAccount = (user_id) => {
