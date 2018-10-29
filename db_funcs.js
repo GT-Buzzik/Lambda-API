@@ -84,9 +84,9 @@ function getUserValues(user_id, attribute_names) {
  * of tracks the user has listened to and their dates.
  */
 module.exports.getListeningHistory = (user_id, timestamp_low, timestamp_high) => {
-    if (timestamp_low === undefined)
+    if (typeof timestamp_low == 'number')
         timestamp_low = 0;
-    if (timestamp_high === undefined)
+    if (typeof timestamp_high == 'number')
         timestamp_high = Number.MAX_SAFE_INTEGER;
 
     var params = {
@@ -125,9 +125,9 @@ module.exports.getListeningHistory = (user_id, timestamp_low, timestamp_high) =>
  * of tracks the users have listened to and their dates.
  */
 module.exports.getListeningHistoryMultipleUsers = (user_ids, timestamp_low, timestamp_high) => {
-    if (timestamp_low === undefined)
+    if (typeof timestamp_low == 'number')
         timestamp_low = 0;
-    if (timestamp_high === undefined)
+    if (typeof timestamp_high == 'number')
         timestamp_high = Number.MAX_SAFE_INTEGER;
 
     let prom = new Promise(() => {
