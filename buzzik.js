@@ -39,10 +39,16 @@ exports.buzzik = function(clientId, clientSecret, redirectUri) {
                         function(data) {
                             db_funcs.storeListeningHistory(user_id, data.body);
                         });
+
+                    return JSON.stringify("200");
+
                 },
                 function(err) {
                     console.error(err);
                 });
+            return new Promise((resolve, reject) => {
+                resolve("200");
+            });
         },
         /**
          * Takes a user ID through the endpoint and calls out to the DB library
@@ -101,6 +107,16 @@ exports.buzzik = function(clientId, clientSecret, redirectUri) {
          */
         getFacultyStatus: (user_id) => {
             return db_funcs.getUserFacultyStatus(user_id).then(data => {
+                return JSON.stringify(data);
+            });
+        },
+
+        /**
+         * Requires a list of user_ids, low and high timestamps.
+         * Returns the data associated with them.
+         */
+        getListeningHistoryMultipleUsers: (user_ids, tslow, tshigh) => {
+            return db_funcs.getListeningHistoryMultipleUsers(user_ids, tslow, tshigh).then(data => {
                 return JSON.stringify(data);
             });
         },

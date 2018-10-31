@@ -1,11 +1,13 @@
 const redirectUri = "https://buzzik-cooperpellaton.c9users.io:8080/process-token";
 require('env2')('env.json');
+const bodyParser = require('body-parser');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const db_funcs = require("./db_funcs");
 const buzzik = require('./buzzik').buzzik(process.env['spotify_client_id'], process.env['spotify_client_secret'], redirectUri);
 const app = express();
 app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: false }));
 
 let handleErr = (req, res) => err => {
     console.log(err);
@@ -26,7 +28,7 @@ let handleData = (req, res) => data => {
  */
 
 app.get('/reset', (req, res) => {
-    buzzik.doStuff(null).then(handleData(req, res), handleErr(req, res));
+    buzzik.defaultAction(null).then(handleData(req, res), handleErr(req, res));
 });
 
 app.get('/process-token', (req, res) => {
@@ -65,6 +67,18 @@ app.get('/api/store_user_notification_frequency', (req, res) => {
 
 app.get('/api/get_faculty_status', (req, res) => {
     buzzik.getFacultyStatus(req.query.id).then(handleData(req, res), handleErr(req, res));
+});
+
+app.get('/api/get_listening_history_multiple_users', (req, res) => {
+    var tslow = 0;
+    var tshigh = Number.MAX_SAFE_INTEGER;
+    if (typeof req.body.timestamp_low !== 'undefined' && req.body.timestamp_low) {
+        tslow = req.body.timestamp_low;
+    }
+    if (typeof req.body.timestamp_high !== 'undefined' && req.body.timestamp_high) {
+        tshigh = req.body.timestamp_high;
+    }
+    buzzik.getListeningHistoryMultipleUsers(req.body.user_ids, tslow, tshigh).then(handleData(req, res), handleErr(req, res));
 });
 
 app.listen(process.env.PORT, () => console.log('Buzzik Spotify API handler listening on port:' + process.env.PORT))

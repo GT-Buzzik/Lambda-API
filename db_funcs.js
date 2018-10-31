@@ -130,7 +130,7 @@ module.exports.getListeningHistoryMultipleUsers = (user_ids, timestamp_low, time
     if (typeof timestamp_high !== 'number')
         timestamp_high = Number.MAX_SAFE_INTEGER;
 
-    let prom = new Promise(() => {
+    let prom = new Promise((resolve, reject) => {
         let listening_history = [];
         resolve(listening_history);
     });
@@ -155,10 +155,11 @@ module.exports.getListeningHistoryMultipleUsers = (user_ids, timestamp_low, time
         curr_prom = curr_prom.then((list) => {
             documentClient.query(params, (err, data) => {
                 if (err) {
-                    reject(err);
+                    // reject(err);
                 } else {
                     list.concat(data.Items)
-                    resolve(list);
+                    // resolve(list);
+                    return list;
                 }
             });
         });
@@ -179,9 +180,9 @@ module.exports.storeListeningHistory = (user_id, spotifyHistory) => {
             Item: {
                 "user_id": user_id,
                 "listening_date": new Date(t.played_at).getTime(),
-                "track_name": t.name,
-                "track_duration": t.duration_ms / 1000,
-                "track_explicit": t.explicit
+                "track_name": t.track.name,
+                "track_duration": t.track.duration_ms / 1000,
+                "track_explicit": t.track.explicit
             },
             TableName: "listening_history"
         };
