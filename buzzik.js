@@ -35,7 +35,6 @@ exports.buzzik = function(clientId, clientSecret, redirectUri) {
             spotifyApi.getMe().then(
                 function(data) {
                     var user_id = data.body.uri;
-                    console.log("USER ID: " + user_id);
                     spotifyApi.getMyRecentlyPlayedTracks().then(
                         function(data) {
                             db_funcs.storeListeningHistory(user_id, data.body);
@@ -43,7 +42,6 @@ exports.buzzik = function(clientId, clientSecret, redirectUri) {
                 },
                 function(err) {
                     console.error(err);
-
                 });
         },
         /**

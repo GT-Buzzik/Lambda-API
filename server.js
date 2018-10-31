@@ -1,6 +1,4 @@
-// Env. Specific.
 const redirectUri = "https://buzzik-cooperpellaton.c9users.io:8080/process-token";
-
 require('env2')('env.json');
 const express = require('express');
 const cookieParser = require('cookie-parser');
@@ -45,7 +43,7 @@ app.get('/api/get_spotify_details', (req, res) => {
     buzzik.fetch_spotify_details(req.query.id).then(handleData(req, res), handleErr(req, res));
 });
 
-app.get('/api/fetch_listening_history', (req, res) => {
+app.get('/api/get_listening_history', (req, res) => {
     buzzik.fetchListeningHistory(req.query.id).then(handleData(req, res), handleErr(req, res));
 });
 
@@ -66,7 +64,7 @@ app.get('/api/store_user_notification_frequency', (req, res) => {
 });
 
 app.get('/api/get_faculty_status', (req, res) => {
-    buzzil.getFacultyStatus(req.query.id).then(handleData(req, res), handleErr(req, res));
+    buzzik.getFacultyStatus(req.query.id).then(handleData(req, res), handleErr(req, res));
 });
 
 app.listen(process.env.PORT, () => console.log('Buzzik Spotify API handler listening on port:' + process.env.PORT))
