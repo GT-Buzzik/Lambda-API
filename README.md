@@ -25,6 +25,9 @@ Return the notification frequency stored in the database for a given user. Query
 * `/api/get_faculty_status?id=XXX`
 Returns whether the given `id` belongs to a faculty member or not. Return value is boolean. Query parameter requires a valid `id` to be passed.
 
+* `/api/get_raw_data?id=XXX`
+Returns raw data of the queried `id` from the database.
+
 * `/get_listening_history?id=XXX`
 This will return the user listening history of pre-registered user `XXX` with a sample form as seen below.
 ```json
