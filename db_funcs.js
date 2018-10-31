@@ -83,12 +83,19 @@ function getUserValues(user_id, attribute_names) {
  * Takes user_id, calls callback(err, data) where the data is a list
  * of tracks the user has listened to and their dates.
  */
-module.exports.getListeningHistory = (user_id) => {
+module.exports.getListeningHistory = (user_id, timestamp_low, timestamp_high) => {
+    if (typeof timestamp_low !== 'number')
+        timestamp_low = 0;
+    if (typeof timestamp_high !== 'number')
+        timestamp_high = Number.MAX_SAFE_INTEGER;
+
     var params = {
         ExpressionAttributeValues: {
-            ":UID": user_id
+            ":UID": user_id,
+            ":TSL": timestamp_low,
+            ":TSH": timestamp_high
         },
-        KeyConditionExpression: "user_id = :UID",
+        KeyConditionExpression: "user_id = :UID AND listening_date >= :TSL AND listening_date <= :TSH",
         ProjectionExpression: "listening_date, track_name, track_duration, track_explicit",
         // TableName : process.env.LISTENING_HISTORY_TABLE_NAME
         TableName: "listening_history"
@@ -110,7 +117,54 @@ module.exports.getListeningHistory = (user_id) => {
         // });
         return data;
     });
+};
 
+/**
+ * EXTERNAL
+ * Takes list of user_ids, returns data as a list
+ * of tracks the users have listened to and their dates.
+ */
+module.exports.getListeningHistoryMultipleUsers = (user_ids, timestamp_low, timestamp_high) => {
+    if (typeof timestamp_low !== 'number')
+        timestamp_low = 0;
+    if (typeof timestamp_high !== 'number')
+        timestamp_high = Number.MAX_SAFE_INTEGER;
+
+    let prom = new Promise(() => {
+        let listening_history = [];
+        resolve(listening_history);
+    });
+
+    let curr_prom = prom;
+
+    user_ids.forEach((user_id) => {
+        //Retrieve each user's listening history.
+        var params = {
+            ExpressionAttributeValues: {
+                ":UID": user_id,
+                ":TSL": timestamp_low,
+                ":TSH": timestamp_high
+            },
+            KeyConditionExpression: "user_id = :UID AND listening_date >= :TSL AND listening_date <= :TSH",
+            ProjectionExpression: "listening_date, track_name, track_duration, track_explicit",
+            // TableName : process.env.LISTENING_HISTORY_TABLE_NAME
+            TableName: "listening_history"
+        };
+
+        //Make all the queries happen sequentially.
+        curr_prom = curr_prom.then((list) => {
+            documentClient.query(params, (err, data) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    list.concat(data.Items)
+                    resolve(list);
+                }
+            });
+        });
+    });
+
+    return prom;
 };
 
 /**
@@ -142,6 +196,7 @@ module.exports.storeListeningHistory = (user_id, spotifyHistory) => {
         });
     });
 }
+
 
 /**
  * INTERNAL
