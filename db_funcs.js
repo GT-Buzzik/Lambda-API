@@ -198,6 +198,19 @@ module.exports.storeListeningHistory = (user_id, spotifyHistory) => {
     });
 }
 
+/**
+ * EXTERNAL
+ * Retrieve user raw data, excluding security related things like spotify access token.
+ */
+module.exports.getUserRawData = (user_id) => {
+    return getUserValues(user_id, "user_id, notification_frequency, is_faculty").then((user_data) => {
+        return getListeningHistory(user_id).then((song_list) => {
+            user_data.listening_history = song_list;
+            return user_data;
+        });
+    });
+}
+
 
 /**
  * INTERNAL
