@@ -103,6 +103,15 @@ exports.buzzik = function(clientId, clientSecret, redirectUri) {
         },
 
         /**
+         * Sets the faculty status of a given user.
+         */
+        storeFacultyStatus: (user_id, faculty_status) => {
+            return db_funcs.storeUserFacultyStatus(user_id, faculty_status).then(data => {
+                return JSON.stringify(data);
+            });
+        },
+
+        /**
          * Requires a user_id. Returns whether a given user_id is a faculty.
          */
         getFacultyStatus: (user_id) => {

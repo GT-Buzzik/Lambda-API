@@ -41,9 +41,6 @@ app.get('/', (req, res) => {
     buzzik.defaultAction((req.cookies || {})["token"]).then(handleData(req, res), handleErr(req, res));
 });
 
-app.get('/api/get_spotify_details', (req, res) => {
-    buzzik.fetch_spotify_details(req.query.id).then(handleData(req, res), handleErr(req, res));
-});
 
 app.get('/api/get_listening_history', (req, res) => {
     buzzik.fetchListeningHistory(req.query.id).then(handleData(req, res), handleErr(req, res));
@@ -63,6 +60,10 @@ app.get('/api/get_user_notification_frequency', (req, res) => {
 
 app.get('/api/store_user_notification_frequency', (req, res) => {
     buzzik.storeNotificationFrequency(req.query.id, req.query.notification_frequency).then(handleData(req, res), handleErr(req, res));
+});
+
+app.get('/api/store_faculty_status', (req, res) => {
+    buzzik.storeFacultyStatus(req.query.id, req.query.faculty_status).then(handleData(req, res), handleErr(req, res));
 });
 
 app.get('/api/get_faculty_status', (req, res) => {
