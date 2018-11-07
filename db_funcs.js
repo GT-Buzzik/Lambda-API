@@ -28,7 +28,6 @@ const state = "NA";
 function storeUserValue(user_id, attribute_name, attribute_value) {
     let params = {
         ExpressionAttributeValues: {
-            ":UID": user_id,
             ":ATTR": attribute_value
         },
         Key: {
@@ -38,7 +37,7 @@ function storeUserValue(user_id, attribute_name, attribute_value) {
         UpdateExpression: "SET " + attribute_name + " = :ATTR",
     };
     return new Promise((resolve, reject) => {
-        documentClient.updateItem(params, function(err, data) {
+        documentClient.update(params, function(err, data) {
             if (err) {
                 reject(err);
             }
@@ -70,7 +69,7 @@ function getUserValues(user_id, attribute_names) {
             if (err) {
                 reject(err);
             } else {
-                resolve(data);
+                resolve(data.Items);
             }
         });
     });

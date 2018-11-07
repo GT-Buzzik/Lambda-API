@@ -26,6 +26,25 @@ let handleData = (req, res) => data => {
 /**
  * ROUTES!
  */
+
+/**
+ * POST
+ */
+app.post('/api/delete_user', (req, res) => {
+    buzzik.deleteUser(req.query.id).then(handleData(req, res), handleErr(req, res));
+});
+
+app.post('/api/store_user_notification_frequency', (req, res) => {
+    buzzik.storeNotificationFrequency(req.query.id, req.query.notification_frequency).then(handleData(req, res), handleErr(req, res));
+});
+
+app.post('/api/store_faculty_status', (req, res) => {
+    buzzik.storeFacultyStatus(req.query.id, req.query.faculty_status).then(handleData(req, res), handleErr(req, res));
+});
+
+/**
+ * GET
+ */
 app.get('/reset', (req, res) => {
     buzzik.defaultAction(null).then(handleData(req, res), handleErr(req, res));
 });
@@ -44,24 +63,12 @@ app.get('/api/get_listening_history', (req, res) => {
     buzzik.fetchListeningHistory(req.query.id).then(handleData(req, res), handleErr(req, res));
 });
 
-app.get('/api/delete_user', (req, res) => {
-    buzzik.deleteUser(req.query.id).then(handleData(req, res), handleErr(req, res));
-});
-
 app.get('/api/get_user', (req, res) => {
     buzzik.getUser(req.query.id).then(handleData(req, res), handleErr(req, res));
 });
 
 app.get('/api/get_user_notification_frequency', (req, res) => {
     buzzik.getNotificationFrequency(req.query.id).then(handleData(req, res), handleErr(req, res));
-});
-
-app.get('/api/store_user_notification_frequency', (req, res) => {
-    buzzik.storeNotificationFrequency(req.query.id, req.query.notification_frequency).then(handleData(req, res), handleErr(req, res));
-});
-
-app.get('/api/store_faculty_status', (req, res) => {
-    buzzik.storeFacultyStatus(req.query.id, req.query.faculty_status).then(handleData(req, res), handleErr(req, res));
 });
 
 app.get('/api/get_faculty_status', (req, res) => {
