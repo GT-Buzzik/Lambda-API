@@ -35,18 +35,21 @@ exports.buzzik = function(clientId, clientSecret, redirectUri) {
             spotifyApi.getMe().then(
                 function(data) {
                     var user_id = data.body.uri;
-                    console.log("USER ID: " + user_id);
                     spotifyApi.getMyRecentlyPlayedTracks().then(
                         function(data) {
                             db_funcs.storeListeningHistory(user_id, data.body);
+                            console.log(data.body)
                         });
+
+                    return JSON.stringify("200");
+
                 },
                 function(err) {
                     console.error(err);
-
                 });
-
-            return spotifyApi.getMyRecentlyPlayedTracks();
+            return new Promise((resolve, reject) => {
+                resolve("200");
+            });
         },
         /**
          * Takes a user ID through the endpoint and calls out to the DB library
@@ -66,6 +69,73 @@ exports.buzzik = function(clientId, clientSecret, redirectUri) {
          */
         deleteUser: (user_id) => {
             return db_funcs.deleteUserAccount(user_id).then(data => {
+                return JSON.stringify(data);
+            });
+        },
+
+        /**
+         * Takes a user_id and then calls the DB Func to get the user's spotify
+         * details.
+         */
+        getUser: (user_id) => {
+            return db_funcs.getUserSpotifyDetails(user_id).then(data => {
+                return JSON.stringify(data);
+            });
+        },
+
+        /**
+         * Takes a user_id and returns the notification frequency associated with
+         * their ID in the database.
+         */
+        getNotificationFrequency: (user_id) => {
+            return db_funcs.getUserNotificationFrequency(user_id).then(data => {
+                return JSON.stringify(data);
+            });
+        },
+
+        /**
+         * Requires a user_id and notification_frequency. Stores this association
+         * in the database so that it can be pulled from the app.
+         */
+        storeNotificationFrequency: (user_id, notification_frequency) => {
+            return db_funcs.storeUserNotificationFrequency(user_id, notification_frequency).then(data => {
+                return JSON.stringify(data);
+            });
+        },
+
+        /**
+         * Sets the faculty status of a given user.
+         */
+        storeFacultyStatus: (user_id, faculty_status) => {
+            return db_funcs.storeUserFacultyStatus(user_id, faculty_status).then(data => {
+                return JSON.stringify(data);
+            });
+        },
+
+        /**
+         * Requires a user_id. Returns whether a given user_id is a faculty.
+         */
+        getFacultyStatus: (user_id) => {
+            return db_funcs.getUserFacultyStatus(user_id).then(data => {
+                return JSON.stringify(data);
+            });
+        },
+
+        /**
+         * Requires a list of user_ids, low and high timestamps.
+         * Returns the data associated with them.
+         */
+        getListeningHistoryMultipleUsers: (user_ids, tslow, tshigh) => {
+            return db_funcs.getListeningHistoryMultipleUsers(user_ids, tslow, tshigh).then(data => {
+                return JSON.stringify(data);
+            });
+        },
+
+        /**
+         * Returns the raw data for a given user.
+         */
+        getRawData: (user_id) => {
+            return db_funcs.getUserRawData(user_id).then(data => {
                 return JSON.stringify(data);
             });
         },
