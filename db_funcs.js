@@ -66,10 +66,13 @@ function getUserValues(user_id, attribute_names) {
 
     return new Promise((resolve, reject) => {
         documentClient.query(params, (err, data) => {
-            if (err) {
+            if (data.Items.length === 0) {
+                reject({"Error": "Zero items returned."});
+
+            } else if (err) {
                 reject(err);
             } else {
-                resolve(data.Items);
+                resolve(data.Items[0]);
             }
         });
     });
