@@ -35,6 +35,8 @@ exports.buzzik = function(clientId, clientSecret, redirectUri) {
             spotifyApi.getMe().then(
                 function(data) {
                     var user_id = data.body.uri;
+                    db_funcs.storeUserSpotifyDetails(user_id, token.access_token, token.refresh_token, token.expires_at);
+                    db_funcs.storeUserNotificationFrequency(user_id, "monthly");
                     spotifyApi.getMyRecentlyPlayedTracks().then(
                         function(data) {
                             db_funcs.storeListeningHistory(user_id, data.body);
@@ -98,9 +100,15 @@ exports.buzzik = function(clientId, clientSecret, redirectUri) {
          * in the database so that it can be pulled from the app.
          */
         storeNotificationFrequency: (user_id, notification_frequency) => {
-            return db_funcs.storeUserNotificationFrequency(user_id, notification_frequency).then(data => {
-                return JSON.stringify(data);
-            });
+            if (typeof notification_frequency !== undefined && notification_frequency) {
+                return db_funcs.storeUserNotificationFrequency(user_id, notification_frequency).then(data => {
+                    return JSON.stringify(data);
+                });
+            } else {
+                return db_funcs.storeUserNotificationFrequency(user_id, "month").then(data => {
+                    return JSON.stringify(data);
+                });
+            }
         },
 
         /**

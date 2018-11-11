@@ -1,5 +1,6 @@
 const redirectUri = "https://buzzik-cooperpellaton.c9users.io:8080/process-token";
 require('env2')('env.json');
+const cors = require('cors')
 const bodyParser = require('body-parser');
 const express = require('express');
 const cookieParser = require('cookie-parser');
@@ -8,6 +9,7 @@ const buzzik = require('./buzzik').buzzik(process.env['spotify_client_id'], proc
 const app = express();
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cors())
 
 let handleErr = (req, res) => err => {
     console.log(err);
