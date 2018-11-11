@@ -94,7 +94,7 @@ module.exports.getListeningHistory = (user_id, timestamp_low, timestamp_high) =>
             ":TSL": timestamp_low,
             ":TSH": timestamp_high
         },
-        KeyConditionExpression: "user_id = :UID AND listening_date >= :TSL AND listening_date <= :TSH",
+        KeyConditionExpression: "user_id = :UID AND listening_date BETWEEN :TSL AND :TSH",
         ProjectionExpression: "listening_date, track_name, track_duration, track_explicit",
         // TableName : process.env.LISTENING_HISTORY_TABLE_NAME
         TableName: "listening_history"
@@ -144,7 +144,7 @@ module.exports.getListeningHistoryMultipleUsers = (user_ids, timestamp_low, time
                 ":TSL": timestamp_low,
                 ":TSH": timestamp_high
             },
-            KeyConditionExpression: "user_id = :UID AND listening_date >= :TSL AND listening_date <= :TSH",
+            KeyConditionExpression: "user_id = :UID AND listening_date BETWEEN :TSL AND :TSH",
             ProjectionExpression: "listening_date, track_name, track_duration, track_explicit",
             // TableName : process.env.LISTENING_HISTORY_TABLE_NAME
             TableName: "listening_history"
