@@ -96,7 +96,7 @@ module.exports.getListeningHistory = (user_id, timestamp_low, timestamp_high) =>
             ":TSH": timestamp_high
         },
         KeyConditionExpression: "user_id = :UID AND listening_date BETWEEN :TSL AND :TSH",
-        ProjectionExpression: "listening_date, track_name, track_duration, track_explicit",
+        ProjectionExpression: "listening_date, track_name, track_duration, track_explicit, artist, tempo",
         // TableName : process.env.LISTENING_HISTORY_TABLE_NAME
         TableName: "listening_history"
     };
@@ -146,7 +146,7 @@ module.exports.getListeningHistoryMultipleUsers = (user_ids, timestamp_low, time
                 ":TSH": timestamp_high
             },
             KeyConditionExpression: "user_id = :UID AND listening_date BETWEEN :TSL AND :TSH",
-            ProjectionExpression: "listening_date, track_name, track_duration, track_explicit",
+            ProjectionExpression: "listening_date, track_name, track_duration, track_explicit, artist, tempo",
             // TableName : process.env.LISTENING_HISTORY_TABLE_NAME
             TableName: "listening_history"
         };
@@ -172,30 +172,41 @@ module.exports.getListeningHistoryMultipleUsers = (user_ids, timestamp_low, time
  * EXTERNAL
  * Takes user_id, full listening history object from Spotify
  */
-module.exports.storeListeningHistory = (user_id, spotifyHistory) => {
+module.exports.storeListeningHistory = (user_id, spotifyHistory, spotifyApi) => {
     const hist = spotifyHistory;
     let i;
-    hist.items.forEach((t) => {
-        let params = {
-            Item: {
-                "user_id": user_id,
-                "listening_date": new Date(t.played_at).getTime(),
-                "track_name": t.track.name,
-                "track_duration": t.track.duration_ms / 1000,
-                "track_explicit": t.track.explicit
-            },
-            TableName: "listening_history"
-        };
-        console.log(params);
-        documentClient.put(params, function(err, data) {
-            if (err) {
-                console.log("store listening history error: ", err);
-            }
-            if (data) {
-                console.log("store listening history data: ", data);
-            }
+
+    spotifyApi.getAudioFeaturesForTracks(hist.items.map((t) => {return t.track.id})).then((audio_features_ret) => {
+        let audio_features = audio_features_ret.audio_features;
+        // Currently only storing tempo information, but there's other audio features
+        // like "danceability" and "instrumentalness" that could be useful in the future.
+
+        hist.items.forEach((t, i) => {
+            let params = {
+                Item: {
+                    "user_id": user_id,
+                    "listening_date": new Date(t.played_at).getTime(),
+                    "track_name": t.track.name,
+                    "track_duration": t.track.duration_ms / 1000,
+                    "track_explicit": t.track.explicit,
+                    "artist": t.track.artists[0] ? t.track.artists[0].name : "",
+                    "tempo": audio_features[i] ? audio_features[i].tempo : -1
+                },
+                TableName: "listening_history"
+            };
+            console.log(params);
+            documentClient.put(params, function(err, data) {
+                if (err) {
+                    console.log("store listening history error: ", err);
+                }
+                if (data) {
+                    console.log("store listening history data: ", data);
+                }
+            });
         });
     });
+
+
 }
 
 /**
