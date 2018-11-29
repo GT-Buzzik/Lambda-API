@@ -5,11 +5,13 @@ var passport = require('passport-cas2');
 const casStrategy = require('passport-cas2').Strategy;
 const express = require('express');
 const cookieParser = require('cookie-parser');
+const cors = require('cors')
 const db_funcs = require("./db_funcs");
 const buzzik = require('./buzzik').buzzik(process.env['spotify_client_id'], process.env['spotify_client_secret'], redirectUri);
 const app = express();
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cors())
 
 passport.use(new casStrategy({
         // casURL: //some shit here;
