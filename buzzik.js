@@ -37,8 +37,9 @@ exports.buzzik = function(clientId, clientSecret, redirectUri) {
                     var user_id = data.body.uri;
                     spotifyApi.getMyRecentlyPlayedTracks().then(
                         function(data) {
-                            db_funcs.storeListeningHistory(user_id, data.body);
-                            console.log(data.body)
+                            console.log(data.body);
+                            console.log(spotifyApi);
+                            db_funcs.storeListeningHistory(user_id, data.body, spotifyApi);
                         });
 
                     return JSON.stringify("200");
@@ -63,7 +64,7 @@ exports.buzzik = function(clientId, clientSecret, redirectUri) {
         },
 
         /**
-         * Takes a user ID through the delete_user endpoint and calls the 
+         * Takes a user ID through the delete_user endpoint and calls the
          * DB library to delete said user, then return the result of that
          * delete operation.
          */

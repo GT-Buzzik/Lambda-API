@@ -12,6 +12,7 @@
     "aws-sdk": "^2.182.0",
     "body-parser": "^1.18.3",
     "node-fetch": "^2.1.2",
+    "passport-cas2": "0.0.10",
     "spotify-web-api-node": "^3.0.0",
     "util": "^0.10.3"
   }

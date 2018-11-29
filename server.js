@@ -1,6 +1,8 @@
 const redirectUri = "https://buzzik-cooperpellaton.c9users.io:8080/process-token";
 require('env2')('env.json');
 const bodyParser = require('body-parser');
+var passport = require('passport-cas2');
+const casStrategy = require('passport-cas2').Strategy;
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const db_funcs = require("./db_funcs");
@@ -8,6 +10,16 @@ const buzzik = require('./buzzik').buzzik(process.env['spotify_client_id'], proc
 const app = express();
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+passport.use(new casStrategy({
+        // casURL: //some shit here;
+    },
+    function(username, profile, done) {
+        User.findOrCreate({ ... }, function(err, user) {
+            done(err, user);
+        });
+    }););
+
 
 let handleErr = (req, res) => err => {
     console.log(err);
