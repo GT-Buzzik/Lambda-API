@@ -17,6 +17,9 @@ Stores the `faculty_status` of the `id`. Both query parameters must be valid. `f
 
 ### GET
 
+* `/auth/login/`
+Checks if the user is logged in, if not redirects them to sign on using GT Single Sign-On, using CAS.
+
 * `/api/get_user?id=XXX` 
 Returns information about the user queried. Query parameter requires a valid `id` to be passed.
 

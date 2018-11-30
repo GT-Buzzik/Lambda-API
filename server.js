@@ -65,44 +65,44 @@ app.post('/api/delete_user', authenticationMiddleware(), (req, res) => {
     buzzik.deleteUser(req.query.id).then(handleData(req, res), handleErr(req, res));
 });
 
-app.post('/api/store_user_notification_frequency', (req, res) => {
+app.post('/api/store_user_notification_frequency', authenticationMiddleware(), (req, res) => {
     buzzik.storeNotificationFrequency(req.query.id, req.query.notification_frequency).then(handleData(req, res), handleErr(req, res));
 });
 
-app.post('/api/store_faculty_status', (req, res) => {
+app.post('/api/store_faculty_status', authenticationMiddleware(), (req, res) => {
     buzzik.storeFacultyStatus(req.query.id, req.query.faculty_status).then(handleData(req, res), handleErr(req, res));
 });
 
 /**
  * GET
  */
-app.get('/reset', (req, res) => {
+app.get('/reset', authenticationMiddleware(), (req, res) => {
     buzzik.defaultAction(null).then(handleData(req, res), handleErr(req, res));
 });
 
-app.get('/process-token', (req, res) => {
+app.get('/process-token', authenticationMiddleware(), (req, res) => {
     let state = req.query.state;
     let code = req.query.code;
     buzzik.makeCookie(state, code).then(null, handleErr(req, res));
 });
 
-app.get('/', (req, res) => {
+app.get('/', authenticationMiddleware(), (req, res) => {
     buzzik.defaultAction((req.cookies || {})["token"]).then(handleData(req, res), handleErr(req, res));
 });
 
-app.get('/api/get_user', (req, res) => {
+app.get('/api/get_user', authenticationMiddleware(), (req, res) => {
     buzzik.getUser(req.query.id).then(handleData(req, res), handleErr(req, res));
 });
 
-app.get('/api/get_user_notification_frequency', (req, res) => {
+app.get('/api/get_user_notification_frequency', authenticationMiddleware(), (req, res) => {
     buzzik.getNotificationFrequency(req.query.id).then(handleData(req, res), handleErr(req, res));
 });
 
-app.get('/api/get_faculty_status', (req, res) => {
+app.get('/api/get_faculty_status', authenticationMiddleware(), (req, res) => {
     buzzik.getFacultyStatus(req.query.id).then(handleData(req, res), handleErr(req, res));
 });
 
-app.get('/api/get_listening_history_multiple_users', (req, res) => {
+app.get('/api/get_listening_history_multiple_users', authenticationMiddleware(), (req, res) => {
     var tslow = 0;
     var tshigh = Number.MAX_SAFE_INTEGER;
     if (typeof req.body.timestamp_low !== 'undefined' && req.body.timestamp_low) {
@@ -114,7 +114,7 @@ app.get('/api/get_listening_history_multiple_users', (req, res) => {
     buzzik.getListeningHistoryMultipleUsers(req.body.user_ids, tslow, tshigh).then(handleData(req, res), handleErr(req, res));
 });
 
-app.get('/api/get_raw_data', (req, res) => {
+app.get('/api/get_raw_data', authenticationMiddleware(), (req, res) => {
     buzzik.getRawData(req.query.id).then(handleData(req, res), handleErr(req, res));
 });
 
