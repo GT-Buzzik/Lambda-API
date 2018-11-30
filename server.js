@@ -1,27 +1,39 @@
 const redirectUri = "https://buzzik-cooperpellaton.c9users.io:8080/process-token";
 require('env2')('env.json');
 const bodyParser = require('body-parser');
-var passport = require('passport-cas2');
+var passport = require('passport');
 const casStrategy = require('passport-cas2').Strategy;
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors')
+const awsServerlessExpress = require('aws-serverless-express');
 const db_funcs = require("./db_funcs");
 const buzzik = require('./buzzik').buzzik(process.env['spotify_client_id'], process.env['spotify_client_secret'], redirectUri);
 const app = express();
+
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cors())
+app.use(cors());
+app.use(passport.initialize());
+app.use(passport.session());
 
 passport.use(new casStrategy({
-        // casURL: //some shit here;
+        casURL: 'https://login.gatech.edu/cas'
     },
     function(username, profile, done) {
-        User.findOrCreate({ ... }, function(err, user) {
-            done(err, user);
-        });
-    }););
+        done(null, { username, profile });
+    }));
 
+
+
+function authenticationMiddleware() {
+    return function(req, res, next) {
+        if (req.isAuthenticated()) {
+            return next()
+        }
+        res.redirect('/login')
+    }
+}
 
 let handleErr = (req, res) => err => {
     console.log(err);
@@ -40,11 +52,16 @@ let handleData = (req, res) => data => {
 /**
  * ROUTES!
  */
+app.get('/auth/login', passport.authenticate('cas', { failureRedirect: '/login' }), (req, res) => {
+    res.redirect('/');
+});
+
 
 /**
  * POST
  */
-app.post('/api/delete_user', (req, res) => {
+app.post('/api/delete_user', authenticationMiddleware(), (req, res) => {
+    // req.user.profile
     buzzik.deleteUser(req.query.id).then(handleData(req, res), handleErr(req, res));
 });
 
@@ -71,10 +88,6 @@ app.get('/process-token', (req, res) => {
 
 app.get('/', (req, res) => {
     buzzik.defaultAction((req.cookies || {})["token"]).then(handleData(req, res), handleErr(req, res));
-});
-
-app.get('/api/get_listening_history', (req, res) => {
-    buzzik.fetchListeningHistory(req.query.id).then(handleData(req, res), handleErr(req, res));
 });
 
 app.get('/api/get_user', (req, res) => {
