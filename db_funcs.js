@@ -28,7 +28,6 @@ const state = "NA";
 function storeUserValue(user_id, attribute_name, attribute_value) {
     let params = {
         ExpressionAttributeValues: {
-            ":UID": user_id,
             ":ATTR": attribute_value
         },
         Key: {
@@ -38,7 +37,7 @@ function storeUserValue(user_id, attribute_name, attribute_value) {
         UpdateExpression: "SET " + attribute_name + " = :ATTR",
     };
     return new Promise((resolve, reject) => {
-        documentClient.updateItem(params, function(err, data) {
+        documentClient.update(params, function(err, data) {
             if (err) {
                 reject(err);
             }
@@ -67,10 +66,13 @@ function getUserValues(user_id, attribute_names) {
 
     return new Promise((resolve, reject) => {
         documentClient.query(params, (err, data) => {
-            if (err) {
+            if (data.Items.length === 0) {
+                reject({"Error": "Zero items returned."});
+
+            } else if (err) {
                 reject(err);
             } else {
-                resolve(data);
+                resolve(data.Items[0]);
             }
         });
     });
@@ -176,8 +178,9 @@ module.exports.storeListeningHistory = (user_id, spotifyHistory, spotifyApi) => 
     const hist = spotifyHistory;
     let i;
 
-    spotifyApi.getAudioFeaturesForTracks(hist.items.map((t) => {return t.track.id})).then((audio_features_ret) => {
+    spotifyApi.getAudioFeaturesForTracks(hist.items.map((t) => { return t.track.id })).then((audio_features_ret) => {
         let audio_features = audio_features_ret.audio_features;
+        console.log("Audio Features:" + audio_features)
         // Currently only storing tempo information, but there's other audio features
         // like "danceability" and "instrumentalness" that could be useful in the future.
 
@@ -190,7 +193,7 @@ module.exports.storeListeningHistory = (user_id, spotifyHistory, spotifyApi) => 
                     "track_duration": t.track.duration_ms / 1000,
                     "track_explicit": t.track.explicit,
                     "artist": t.track.artists[0] ? t.track.artists[0].name : "",
-                    "tempo": audio_features[i] ? audio_features[i].tempo : -1
+                    // "tempo": audio_features[i] ? audio_features[i].tempo : -1
                 },
                 TableName: "listening_history"
             };

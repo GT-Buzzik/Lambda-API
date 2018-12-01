@@ -12,10 +12,11 @@ Returns the status of the delete, either `200` or `404`. Query parameter require
 * `/api/store_user_notification_frequency?id=XXX&notification_frequency=YYY`
 Stores the `notification_frequency` specified against the `id` in the database. Notification frequency is either `day`, `week`, `month`, `never`.
 
-* `/api/store_user_notification_frequency?id=XXX&faculty_status=YYY`
+* `/api/store_faculty_status?id=XXX&faculty_status=YYY`
 Stores the `faculty_status` of the `id`. Both query parameters must be valid. `faculty_status` must be boolean.
 
 ### GET
+
 * `/api/get_user?id=XXX`
 Returns information about the user queried. Query parameter requires a valid `id` to be passed.
 
@@ -24,6 +25,9 @@ Return the notification frequency stored in the database for a given user. Query
 
 * `/api/get_faculty_status?id=XXX`
 Returns whether the given `id` belongs to a faculty member or not. Return value is boolean. Query parameter requires a valid `id` to be passed.
+
+* `/api/get_raw_data?id=XXX`
+Returns raw data of the queried `id` from the database.
 
 * `/get_listening_history?id=XXX`
 This will return the user listening history of pre-registered user `XXX`.

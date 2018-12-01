@@ -37,6 +37,8 @@ exports.buzzik = function(clientId, clientSecret, redirectUri) {
                     var user_id = data.body.uri;
                     spotifyApi.getMyRecentlyPlayedTracks().then(
                         function(data) {
+                            console.log(data.body);
+                            console.log(spotifyApi);
                             db_funcs.storeListeningHistory(user_id, data.body, spotifyApi);
                         });
 
@@ -126,6 +128,15 @@ exports.buzzik = function(clientId, clientSecret, redirectUri) {
          */
         getListeningHistoryMultipleUsers: (user_ids, tslow, tshigh) => {
             return db_funcs.getListeningHistoryMultipleUsers(user_ids, tslow, tshigh).then(data => {
+                return JSON.stringify(data);
+            });
+        },
+
+        /**
+         * Returns the raw data for a given user.
+         */
+        getRawData: (user_id) => {
+            return db_funcs.getUserRawData(user_id).then(data => {
                 return JSON.stringify(data);
             });
         },
