@@ -65,11 +65,23 @@ app.get('/', (req, res) => {
 });
 
 app.get('/api/get_listening_history', (req, res) => {
-    buzzik.fetchListeningHistory(req.query.id).then(handleData(req, res), handleErr(req, res));
+    if (req.query.id != null) {
+        buzzik.fetchListeningHistory(req.query.id).then(handleData(req, res), handleErr(req, res));
+    } else {
+        res.statusMessage = "Invalid ID!";
+        res.status(400).end();
+        res.send();
+    }
 });
 
 app.get('/api/get_user', (req, res) => {
-    buzzik.getUser(req.query.id).then(handleData(req, res), handleErr(req, res));
+    if (req.query.id != null) {
+        buzzik.getUser(req.query.id).then(handleData(req, res), handleErr(req, res));
+    } else {
+        res.statusMessage = "Invalid ID!";
+        res.status(400).end();
+        res.send();
+    }
 });
 
 app.get('/api/get_user_notification_frequency', (req, res) => {
@@ -93,7 +105,13 @@ app.get('/api/get_listening_history_multiple_users', (req, res) => {
 });
 
 app.get('/api/get_raw_data', (req, res) => {
-    buzzik.getRawData(req.query.id).then(handleData(req, res), handleErr(req, res));
+    if (req.query.id != null) {
+        buzzik.getRawData(req.query.id).then(handleData(req, res), handleErr(req, res));
+    } else {
+        res.statusMessage = "Invalid ID!";
+        res.status(400).end();
+        res.send();
+    }
 });
 
 app.listen(process.env.PORT, () => console.log('Buzzik Spotify API handler listening on port:' + process.env.PORT))
