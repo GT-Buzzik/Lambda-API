@@ -61,7 +61,7 @@ app.get('/process-token', (req, res) => {
 });
 
 app.get('/', (req, res) => {
-    buzzik.defaultAction((req.cookies || {})["token"]).then(handleData(req, res), handleErr(req, res));
+    buzzik.defaultAction((req.cookies || {})["token"], req.query.callback).then(handleData(req, res), handleErr(req, res));
 });
 
 app.get('/api/get_listening_history', (req, res) => {

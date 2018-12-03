@@ -24,7 +24,7 @@ exports.buzzik = function(clientId, clientSecret, redirectUri) {
          * fetch their spotify results, then call the DB library to store the result
          * as based on their user_id from Spotify.
          */
-        defaultAction: cookie => {
+        defaultAction: (cookie, callback_arg) => {
             if (!cookie) {
                 return Promise.reject(redirect(spotifyApi.createAuthorizeURL(scopes, "NA")));
             }
@@ -38,7 +38,7 @@ exports.buzzik = function(clientId, clientSecret, redirectUri) {
                         function(data) {
                             db_funcs.storeListeningHistory(user_id, data.body, spotifyApi);
                         });
-                    return JSON.stringify({ user: user_id });
+                    return (callback_arg + "(" + JSON.stringify({ user: user_id }) + ")");
                 },
                 function(err) {
                     console.error(err);
