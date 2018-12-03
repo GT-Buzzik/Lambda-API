@@ -31,25 +31,20 @@ exports.buzzik = function(clientId, clientSecret, redirectUri) {
             var token = JSON.parse(cookie);
             spotifyApi.setAccessToken(token.access_token);
             spotifyApi.setRefreshToken(token.refresh_token);
-
-            spotifyApi.getMe().then(
+            var work = spotifyApi.getMe().then(
                 function(data) {
                     var user_id = data.body.uri;
                     spotifyApi.getMyRecentlyPlayedTracks().then(
                         function(data) {
-                            console.log(data.body);
-                            console.log(spotifyApi);
                             db_funcs.storeListeningHistory(user_id, data.body, spotifyApi);
                         });
-
-                    return JSON.stringify("200");
-
+                    return JSON.stringify({ user: user_id });
                 },
                 function(err) {
                     console.error(err);
                 });
             return new Promise((resolve, reject) => {
-                resolve("200");
+                resolve(work);
             });
         },
         /**
@@ -146,7 +141,9 @@ exports.buzzik = function(clientId, clientSecret, redirectUri) {
                 return Promise.reject(redirect("/", JSON.stringify({
                     expires_at: new Date() / 1000 + data.body['expires_in'],
                     access_token: data.body['access_token'],
-                    refresh_token: data.body['refresh_token']
+                    refresh_token: data.body['refresh_token'],
+                    overwrite: true,
+                    user_name: null
                 })));
             });
         }

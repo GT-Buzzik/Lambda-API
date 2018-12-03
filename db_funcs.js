@@ -67,7 +67,7 @@ function getUserValues(user_id, attribute_names) {
     return new Promise((resolve, reject) => {
         documentClient.query(params, (err, data) => {
             if (data.Items.length === 0) {
-                reject({"Error": "Zero items returned."});
+                reject({ "Error": "Zero items returned." });
 
             } else if (err) {
                 reject(err);
@@ -218,7 +218,7 @@ module.exports.storeListeningHistory = (user_id, spotifyHistory, spotifyApi) => 
  */
 module.exports.getUserRawData = (user_id) => {
     return getUserValues(user_id, "user_id, notification_frequency, is_faculty").then((user_data) => {
-        return getListeningHistory(user_id).then((song_list) => {
+        return module.exports.getListeningHistory(user_id).then((song_list) => {
             user_data.listening_history = song_list;
             return user_data;
         });
